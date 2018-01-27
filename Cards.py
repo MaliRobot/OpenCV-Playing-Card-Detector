@@ -51,7 +51,6 @@ class Query_card:
         self.rank_img = [] # Thresholded, sized image of card's rank
         self.suit_img = [] # Thresholded, sized image of card's suit
         self.best_rank_match = "Unknown" # Best matched rank
-        self.best_suit_match = "Unknown" # Best matched suit
         self.rank_diff = 0 # Difference between rank image and best matched train rank image
         self.suit_diff = 0 # Difference between suit image and best matched train suit image
 
@@ -62,13 +61,6 @@ class Train_ranks:
         self.img = [] # Thresholded, sized rank image loaded from hard drive
         self.name = "Placeholder"
 
-class Train_suits:
-    """Structure to store information about train suit images."""
-
-    def __init__(self):
-        self.img = [] # Thresholded, sized suit image loaded from hard drive
-        self.name = "Placeholder"
-
 ### Functions ###
 def load_ranks(filepath):
     """Loads rank images from directory specified by filepath. Stores
@@ -77,8 +69,7 @@ def load_ranks(filepath):
     train_ranks = []
     i = 0
     
-    for Rank in ['Ace','Two','Three','Four','Five','Six','Seven',
-                 'Eight','Nine','Ten','Jack','Queen','King']:
+    for Rank in ['1','2','3','4']:
         train_ranks.append(Train_ranks())
         train_ranks[i].name = Rank
         filename = Rank + '.jpg'
@@ -86,22 +77,6 @@ def load_ranks(filepath):
         i = i + 1
 
     return train_ranks
-
-def load_suits(filepath):
-    """Loads suit images from directory specified by filepath. Stores
-    them in a list of Train_suits objects."""
-
-    train_suits = []
-    i = 0
-    
-    for Suit in ['Spades','Diamonds','Clubs','Hearts']:
-        train_suits.append(Train_suits())
-        train_suits[i].name = Suit
-        filename = Suit + '.jpg'
-        train_suits[i].img = cv2.imread(filepath+filename, cv2.IMREAD_GRAYSCALE)
-        i = i + 1
-
-    return train_suits
 
 def preprocess_image(image):
     """Returns a grayed, blurred, and adaptively thresholded camera image."""
@@ -119,7 +94,7 @@ def preprocess_image(image):
     # its intensity. The adaptive threshold is set at 50 (THRESH_ADDER) higher
     # than that. This allows the threshold to adapt to the lighting conditions.
     img_w, img_h = np.shape(image)[:2]
-    bkg_level = gray[int(img_h/100)][int(img_w/2)]
+    bkg_level = gray[int(img_h/25)][int(img_w/2)]
     thresh_level = bkg_level + BKG_THRESH
 
     retval, thresh = cv2.threshold(blur,thresh_level,255,cv2.THRESH_BINARY)
@@ -237,21 +212,19 @@ def preprocess_card(contour, image):
 
     return qCard
 
-def match_card(qCard, train_ranks, train_suits):
+def match_card(qCard, train_ranks):
     """Finds best rank and suit matches for the query card. Differences
     the query card rank and suit images with the train rank and suit images.
     The best match is the rank or suit image that has the least difference."""
 
     best_rank_match_diff = 10000
-    best_suit_match_diff = 10000
     best_rank_match_name = "Unknown"
-    best_suit_match_name = "Unknown"
     i = 0
 
     # If no contours were found in query card in preprocess_card function,
     # the img size is zero, so skip the differencing process
     # (card will be left as Unknown)
-    if (len(qCard.rank_img) != 0) and (len(qCard.suit_img) != 0):
+    if (len(qCard.rank_img) != 0):
         
         # Difference the query card rank image from each of the train rank images,
         # and store the result with the least difference
@@ -265,28 +238,14 @@ def match_card(qCard, train_ranks, train_suits):
                     best_rank_match_diff = rank_diff
                     best_rank_name = Trank.name
 
-        # Same process with suit images
-        for Tsuit in train_suits:
-                
-                diff_img = cv2.absdiff(qCard.suit_img, Tsuit.img)
-                suit_diff = int(np.sum(diff_img)/255)
-                
-                if suit_diff < best_suit_match_diff:
-                    best_suit_diff_img = diff_img
-                    best_suit_match_diff = suit_diff
-                    best_suit_name = Tsuit.name
-
     # Combine best rank match and best suit match to get query card's identity.
     # If the best matches have too high of a difference value, card identity
     # is still Unknown
     if (best_rank_match_diff < RANK_DIFF_MAX):
         best_rank_match_name = best_rank_name
 
-    if (best_suit_match_diff < SUIT_DIFF_MAX):
-        best_suit_match_name = best_suit_name
-
     # Return the identiy of the card and the quality of the suit and rank match
-    return best_rank_match_name, best_suit_match_name, best_rank_match_diff, best_suit_match_diff
+    return best_rank_match_name, best_rank_match_diff
     
     
 def draw_results(image, qCard):
@@ -297,14 +256,10 @@ def draw_results(image, qCard):
     cv2.circle(image,(x,y),5,(255,0,0),-1)
 
     rank_name = qCard.best_rank_match
-    suit_name = qCard.best_suit_match
 
     # Draw card name twice, so letters have black outline
-    cv2.putText(image,(rank_name+' of'),(x-60,y-10),font,1,(0,0,0),3,cv2.LINE_AA)
-    cv2.putText(image,(rank_name+' of'),(x-60,y-10),font,1,(50,200,200),2,cv2.LINE_AA)
-
-    cv2.putText(image,suit_name,(x-60,y+25),font,1,(0,0,0),3,cv2.LINE_AA)
-    cv2.putText(image,suit_name,(x-60,y+25),font,1,(50,200,200),2,cv2.LINE_AA)
+    cv2.putText(image,(rank_name),(x-60,y-10),font,1,(0,0,0),3,cv2.LINE_AA)
+    cv2.putText(image,(rank_name),(x-60,y-10),font,1,(50,200,200),2,cv2.LINE_AA)
     
     # Can draw difference value for troubleshooting purposes
     # (commented out during normal operation)
