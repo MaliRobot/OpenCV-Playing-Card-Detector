@@ -19,8 +19,9 @@ import VideoStream
 # Define constants and initialize variables
 
 ## Camera settings
-IM_WIDTH = 1280
-IM_HEIGHT = 720 
+IM_WIDTH = 800
+IM_HEIGHT = 600 
+
 FRAME_RATE = 10
 
 ## Initialize calculated frame rate because it's calculated AFTER the first time it's displayed
