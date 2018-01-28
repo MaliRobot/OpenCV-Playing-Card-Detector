@@ -83,71 +83,79 @@ for Name in ['1','2','3','4']:
             except Exception as e:
                 print(e)
 
-#    image = cv2.imread('Untitled-1.jpg')
+#   included file for testing purposes
+#    image = cv2.imread('test.jpg')
+    try:
+        # Pre-process image
+        gray = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
+        blur = cv2.GaussianBlur(gray,(5,5),0)
+        retval, thresh = cv2.threshold(blur,100,250,cv2.THRESH_BINARY)
+    
+        # Find contours and sort them by size
+        dummy,cnts,hier = cv2.findContours(thresh,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+        cnts = sorted(cnts, key=cv2.contourArea,reverse=True)
+    
+        # Assume largest contour is the card. If there are no contours, print an error
+        flag = 0
+        image2 = image.copy()
+    
+        if len(cnts) == 0:
+            print('No contours found!')
+            quit()
+    
+        card = cnts[0]
+    
+        # Approximate the corner points of the card
+        peri = cv2.arcLength(card,True)
+        approx = cv2.approxPolyDP(card,0.01*peri,True)
+        pts = np.float32(approx)
+    
+        x,y,w,h = cv2.boundingRect(card)
+    
+        # reverse black and white
+#        image = cv2.bitwise_not(image)
+    
+        # Flatten the card and convert it to 200x300
+        warp = Cards.flattener(image,pts,w,h)
+        print(len(warp), len(warp[0]))
+        cv2.imwrite("warp.jpg",warp)
+        
+        # Grab corner of card image, zoom, and threshold
+        corner = warp[0:30, 168:200]
+        cv2.imwrite("corner.jpg",corner)
+    #    cv2.imwrite("Image.jpg",corner) --> GOOD!
+#        corner_gray = cv2.cvtColor(corner,cv2.COLOR_BGR2GRAY)
+        corner_zoom = cv2.resize(corner, (0,0), fx=4, fy=4)
+        corner_blur = cv2.GaussianBlur(corner_zoom,(5,5),0)
+        cv2.imwrite("Image.jpg",corner_blur)
+        print(corner_blur)
+        retval, corner_thresh = cv2.threshold(corner_blur,80,255,cv2.THRESH_BINARY)
+#        retval, corner_thresh = cv2.threshold(corner_blur, 155, 255, cv2. THRESH_BINARY_INV)
+        cv2.imwrite("Image2.jpg",corner_thresh)
+        rank = corner_thresh[0:165, 0:128] # Grabs portion of image that shows rank
+    
+        dummy, rank_cnts, hier = cv2.findContours(rank, cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+        rank_cnts = sorted(rank_cnts, key=cv2.contourArea,reverse=True)
+    
+        x,y,w,h = cv2.boundingRect(rank_cnts[0])
 
-    # Pre-process image
-    gray = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
-#    blur = cv2.GaussianBlur(gray,(5,5),0)
-    retval, thresh = cv2.threshold(gray,100,255,cv2.THRESH_BINARY)
-
-    # Find contours and sort them by size
-    dummy,cnts,hier = cv2.findContours(thresh,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
-    cnts = sorted(cnts, key=cv2.contourArea,reverse=True)
-
-    # Assume largest contour is the card. If there are no contours, print an error
-    flag = 0
-    image2 = image.copy()
-
-    if len(cnts) == 0:
-        print('No contours found!')
-        quit()
-
-    card = cnts[0]
-
-    # Approximate the corner points of the card
-    peri = cv2.arcLength(card,True)
-    approx = cv2.approxPolyDP(card,0.01*peri,True)
-    pts = np.float32(approx)
-
-    x,y,w,h = cv2.boundingRect(card)
-
-    # reverse black and white
-#    warp = cv2.bitwise_not(image).
-
-    # Flatten the card and convert it to 200x300
-    warp = Cards.flattener(image,pts,w,h)
-    print(len(warp), len(warp[0]))
-    # Grab corner of card image, zoom, and threshold
-    #ORIGINAL corner = warp[0:84, 0:32]
-    corner = warp[0:30, 168:200]
-#    cv2.imwrite("Image.jpg",corner) --> GOOD!
-    #corner_gray = cv2.cvtColor(corner,cv2.COLOR_BGR2GRAY)
-    corner_zoom = cv2.resize(corner, (0,0), fx=4, fy=4)
-    corner_blur = cv2.GaussianBlur(corner_zoom,(5,5),0)
-    cv2.imwrite("Image.jpg",corner_blur)
-    print(corner_blur)
-    retval, corner_thresh = cv2.threshold(corner_blur,127,255,cv2.THRESH_BINARY)
-#    retval, corner_thresh = cv2.threshold(corner_blur, 155, 255, cv2. THRESH_BINARY_INV)
-    cv2.imwrite("Image2.jpg",corner_thresh)
-    rank = corner_thresh[20:185, 0:128] # Grabs portion of image that shows rank
-
-    dummy, rank_cnts, hier = cv2.findContours(rank, cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
-    rank_cnts = sorted(rank_cnts, key=cv2.contourArea,reverse=True)
-    x,y,w,h = cv2.boundingRect(rank_cnts[0])
-#        print(cv2.boundingRect(rank_cnts[0]))
-    rank_roi = rank[y:y+h, x:x+w]
-    rank_sized = cv2.resize(rank_roi, (RANK_WIDTH, RANK_HEIGHT), 0, 0)
-    final_img = rank_sized
-
-    cv2.imshow("Image",final_img)
-
-    # Save image
-    print('Press "c" to continue.')
-    key = cv2.waitKey(0) & 0xFF
-    if key == ord('c'):
-        cv2.imwrite(img_path+filename,final_img)
-
-    i = i + 1
+    #        print(cv2.boundingRect(rank_cnts[0]))
+        rank_roi = rank[y:y+h, x:x+w]
+        rank_sized = cv2.resize(rank_roi, (RANK_WIDTH, RANK_HEIGHT), 0, 0)
+        final_img = rank_sized
+    
+        cv2.imshow("Image",final_img)
+    
+        # Save image
+        print('Press "c" to continue.')
+        key = cv2.waitKey(0) & 0xFF
+        if key == ord('c'):
+            cv2.imwrite(img_path+filename,final_img)
+    
+        i = i + 1
+    except Exception as e:
+        print(e)
 
 cv2.destroyAllWindows()
+
 camera.close()
