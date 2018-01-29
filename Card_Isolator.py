@@ -124,7 +124,7 @@ for Name in ['1','2','3','4']:
         corner_zoom = cv2.resize(corner, (0,0), fx=4, fy=4)
         corner_blur = cv2.GaussianBlur(corner_zoom,(5,5),0)
         
-        if debug_pics: cv2.imwrite(debug_path + "3_after_blur.img",corner_blur)
+        if debug_pics: cv2.imwrite(debug_path + "3_after_blur.jpg",corner_blur)
         retval, corner_thresh = cv2.threshold(corner_blur,80,255,cv2.THRESH_BINARY)
 
         if debug_pics: cv2.imwrite(debug_path + "4_thresh.jpg",corner_thresh)
