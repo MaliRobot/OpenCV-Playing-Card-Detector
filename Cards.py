@@ -18,16 +18,12 @@ BKG_THRESH = 60
 CARD_THRESH = 30
 
 # Width and height of card corner, where rank and suit are
-CORNER_WIDTH = 32
-CORNER_HEIGHT = 84
+CORNER_WIDTH = 210
+CORNER_HEIGHT = 30
 
 # Dimensions of rank train images
 RANK_WIDTH = 70
 RANK_HEIGHT = 125
-
-# Dimensions of suit train images
-SUIT_WIDTH = 70
-SUIT_HEIGHT = 100
 
 RANK_DIFF_MAX = 2000
 SUIT_DIFF_MAX = 700
@@ -36,6 +32,8 @@ CARD_MAX_AREA = 120000
 CARD_MIN_AREA = 25000
 
 font = cv2.FONT_HERSHEY_SIMPLEX
+
+### Structures to hold query card and train card information ###
 
 ### Structures to hold query card and train card information ###
 
@@ -49,10 +47,8 @@ class Query_card:
         self.center = [] # Center point of card
         self.warp = [] # 200x300, flattened, grayed, blurred image
         self.rank_img = [] # Thresholded, sized image of card's rank
-        self.suit_img = [] # Thresholded, sized image of card's suit
         self.best_rank_match = "Unknown" # Best matched rank
         self.rank_diff = 0 # Difference between rank image and best matched train rank image
-        self.suit_diff = 0 # Difference between suit image and best matched train suit image
 
 class Train_ranks:
     """Structure to store information about train rank images."""
@@ -183,8 +179,7 @@ def preprocess_card(contour, image):
     retval, query_thresh = cv2.threshold(Qcorner_zoom, thresh_level, 255, cv2. THRESH_BINARY_INV)
     
     # Split in to top and bottom half (top shows rank, bottom shows suit)
-    Qrank = query_thresh[20:185, 0:128]
-    Qsuit = query_thresh[186:336, 0:128]
+    Qrank = query_thresh #[20:185, 0:128]
 
     # Find rank contour and bounding rectangle, isolate and find largest contour
     dummy, Qrank_cnts, hier = cv2.findContours(Qrank, cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
@@ -197,18 +192,6 @@ def preprocess_card(contour, image):
         Qrank_roi = Qrank[y1:y1+h1, x1:x1+w1]
         Qrank_sized = cv2.resize(Qrank_roi, (RANK_WIDTH,RANK_HEIGHT), 0, 0)
         qCard.rank_img = Qrank_sized
-
-    # Find suit contour and bounding rectangle, isolate and find largest contour
-    dummy, Qsuit_cnts, hier = cv2.findContours(Qsuit, cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
-    Qsuit_cnts = sorted(Qsuit_cnts, key=cv2.contourArea,reverse=True)
-    
-    # Find bounding rectangle for largest contour, use it to resize query suit
-    # image to match dimensions of the train suit image
-    if len(Qsuit_cnts) != 0:
-        x2,y2,w2,h2 = cv2.boundingRect(Qsuit_cnts[0])
-        Qsuit_roi = Qsuit[y2:y2+h2, x2:x2+w2]
-        Qsuit_sized = cv2.resize(Qsuit_roi, (SUIT_WIDTH, SUIT_HEIGHT), 0, 0)
-        qCard.suit_img = Qsuit_sized
 
     return qCard
 
@@ -264,9 +247,7 @@ def draw_results(image, qCard):
     # Can draw difference value for troubleshooting purposes
     # (commented out during normal operation)
     #r_diff = str(qCard.rank_diff)
-    #s_diff = str(qCard.suit_diff)
     #cv2.putText(image,r_diff,(x+20,y+30),font,0.5,(0,0,255),1,cv2.LINE_AA)
-    #cv2.putText(image,s_diff,(x+20,y+50),font,0.5,(0,0,255),1,cv2.LINE_AA)
 
     return image
 
@@ -336,7 +317,5 @@ def flattener(image, pts, w, h):
     M = cv2.getPerspectiveTransform(temp_rect,dst)
     warp = cv2.warpPerspective(image, M, (maxWidth, maxHeight))
     warp = cv2.cvtColor(warp,cv2.COLOR_BGR2GRAY)
-
-        
 
     return warp
