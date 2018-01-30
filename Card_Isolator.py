@@ -19,8 +19,8 @@ import os
 img_path = os.path.dirname(os.path.abspath(__file__)) + '/Card_Imgs/'
 debug_path = os.path.dirname(os.path.abspath(__file__)) + '/Debug_Imgs/'
 
-IM_WIDTH = 1280
-IM_HEIGHT = 720
+IM_WIDTH = 800
+IM_HEIGHT = 600 
 
 RANK_WIDTH = 70
 RANK_HEIGHT = 125
@@ -88,9 +88,7 @@ for Name in ['1','2','3','4']:
                 
     try:
         # Pre-process image
-        gray = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
-        blur = cv2.GaussianBlur(gray,(5,5),0)
-        retval, thresh = cv2.threshold(blur,100,250,cv2.THRESH_BINARY)
+        thresh = Cards.preprocess_image(image)
     
         # Find contours and sort them by size
         dummy,cnts,hier = cv2.findContours(thresh,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)

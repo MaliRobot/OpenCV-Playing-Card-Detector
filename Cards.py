@@ -25,8 +25,7 @@ CORNER_HEIGHT = 30
 RANK_WIDTH = 70
 RANK_HEIGHT = 125
 
-RANK_DIFF_MAX = 2000
-SUIT_DIFF_MAX = 700
+RANK_DIFF_MAX = 5000
 
 CARD_MAX_AREA = 120000
 CARD_MIN_AREA = 25000
@@ -92,7 +91,7 @@ def preprocess_image(image):
     img_w, img_h = np.shape(image)[:2]
     bkg_level = gray[int(img_h/25)][int(img_w/2)]
     thresh_level = bkg_level + BKG_THRESH
-
+    if thresh_level < 100: thresh_level = 100
     retval, thresh = cv2.threshold(blur,thresh_level,255,cv2.THRESH_BINARY)
     
     return thresh
@@ -101,7 +100,6 @@ def find_cards(thresh_image):
     """Finds all card-sized contours in a thresholded camera image.
     Returns the number of cards, and a list of card contours sorted
     from largest to smallest."""
-
     # Find contours and sort their indices by contour size
     dummy,cnts,hier = cv2.findContours(thresh_image,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
     index_sort = sorted(range(len(cnts)), key=lambda i : cv2.contourArea(cnts[i]),reverse=True)
@@ -202,6 +200,7 @@ def match_card(qCard, train_ranks):
 
     best_rank_match_diff = 10000
     best_rank_match_name = "Unknown"
+    best_rank_name = None
     i = 0
 
     # If no contours were found in query card in preprocess_card function,
@@ -215,7 +214,7 @@ def match_card(qCard, train_ranks):
 
                 diff_img = cv2.absdiff(qCard.rank_img, Trank.img)
                 rank_diff = int(np.sum(diff_img)/255)
-                
+                print(rank_diff)
                 if rank_diff < best_rank_match_diff:
                     best_rank_diff_img = diff_img
                     best_rank_match_diff = rank_diff
