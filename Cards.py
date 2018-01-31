@@ -19,7 +19,7 @@ CARD_THRESH = 30
 
 # Width and height of card corner, where rank and suit are
 CORNER_WIDTH = 210
-CORNER_HEIGHT = 30
+CORNER_HEIGHT = 190
 
 # Dimensions of rank train images
 RANK_WIDTH = 70
@@ -166,19 +166,19 @@ def preprocess_card(contour, image):
     qCard.warp = flattener(image, pts, w, h)
 
     # Grab corner of warped card image and do a 4x zoom
-    Qcorner = qCard.warp[0:CORNER_HEIGHT, 0:CORNER_WIDTH]
-    Qcorner_zoom = cv2.resize(Qcorner, (0,0), fx=4, fy=4)
+    Qcorner = qCard.warp[10:CORNER_HEIGHT-10, 0:CORNER_WIDTH]
+#    Qcorner_zoom = cv2.resize(Qcorner, (0,0), fx=4, fy=4)
 
     # Sample known white pixel intensity to determine good threshold level
-    white_level = Qcorner_zoom[15,int((CORNER_WIDTH*4)/2)]
+    white_level = Qcorner[15,int((CORNER_WIDTH)/2)]
     thresh_level = white_level - CARD_THRESH
     if (thresh_level <= 0):
         thresh_level = 1
-    retval, query_thresh = cv2.threshold(Qcorner_zoom, thresh_level, 255, cv2. THRESH_BINARY_INV)
-    
+    retval, query_thresh = cv2.threshold(Qcorner, 120, 255, cv2. THRESH_BINARY)
+    ''' TODO issue with dynamic lightning '''
     # Split in to top and bottom half (top shows rank, bottom shows suit)
     Qrank = query_thresh #[20:185, 0:128]
-
+    cv2.imshow("Card Detectorsss",query_thresh)
     # Find rank contour and bounding rectangle, isolate and find largest contour
     dummy, Qrank_cnts, hier = cv2.findContours(Qrank, cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
     Qrank_cnts = sorted(Qrank_cnts, key=cv2.contourArea,reverse=True)
@@ -194,9 +194,9 @@ def preprocess_card(contour, image):
     return qCard
 
 def match_card(qCard, train_ranks):
-    """Finds best rank and suit matches for the query card. Differences
-    the query card rank and suit images with the train rank and suit images.
-    The best match is the rank or suit image that has the least difference."""
+    """Finds best rank matches for the query card. Differences
+    the query card rank images with the train rank images.
+    The best match is the rank image that has the least difference."""
 
     best_rank_match_diff = 10000
     best_rank_match_name = "Unknown"
@@ -214,7 +214,6 @@ def match_card(qCard, train_ranks):
 
                 diff_img = cv2.absdiff(qCard.rank_img, Trank.img)
                 rank_diff = int(np.sum(diff_img)/255)
-                print(rank_diff)
                 if rank_diff < best_rank_match_diff:
                     best_rank_diff_img = diff_img
                     best_rank_match_diff = rank_diff

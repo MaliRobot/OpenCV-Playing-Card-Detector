@@ -90,7 +90,6 @@ while cam_quit == 0:
                 # Draw center point and match result on the image.
                 image = Cards.draw_results(image, cards[k])
                 k = k + 1
-	    
         # Draw card contours on image (have to do contours all at once or
         # they do not show up properly for some reason)
         if (len(cards) != 0):

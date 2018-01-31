@@ -89,9 +89,6 @@ for Name in ['reito_lantern','ornate_kanzashi']:
 #    try:
     # Pre-process image
     thresh = Cards.preprocess_image(image)
-#    gray = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
-#    blur = cv2.GaussianBlur(gray,(5,5),0)
-#    retval, thresh = cv2.threshold(blur,100,255,cv2.THRESH_BINARY)
 
     # Find contours and sort them by size
     dummy,cnts,hier = cv2.findContours(thresh,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
@@ -119,15 +116,16 @@ for Name in ['reito_lantern','ornate_kanzashi']:
     if debug_pics: cv2.imwrite(debug_path + "1_rectangle.jpg",warp)
     
     # Grab corner of card image, zoom, and threshold
-    corner = warp[0:30, 0:210]
+    corner = warp[20:190, 0:210]
+    
     if debug_pics: cv2.imwrite(debug_path + "2_corner.jpg",corner)
 
-    corner_zoom = cv2.resize(corner, (0,0), fx=4, fy=4)
-    corner_blur = cv2.GaussianBlur(corner_zoom,(5,5),0)
+#    corner_zoom = cv2.resize(corner, (0,0), fx=4, fy=4)
+    corner_blur = cv2.GaussianBlur(corner,(5,5),0)
     
     if debug_pics: cv2.imwrite(debug_path + "3_after_blur.jpg",corner_zoom)
 
-    retval, corner_thresh = cv2.threshold(corner_blur, 155, 255, cv2. THRESH_BINARY)
+    retval, corner_thresh = cv2.threshold(corner_blur, 120, 255, cv2. THRESH_BINARY)
 
     if debug_pics: cv2.imwrite(debug_path + "4_thresh.jpg",corner_thresh)
     rank = corner_thresh[0:165, 0:800] # Grabs portion of image that shows rank
