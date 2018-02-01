@@ -64,7 +64,7 @@ def load_ranks(filepath):
     train_ranks = []
     i = 0
     
-    for Rank in ['reito_lantern','ornate_kanzashi']:
+    for Rank in  ['reito_lantern','ornate_kanzashi', 'ghostly_wings', 'plains', 'ninija_of_the_deep_hours']:
         train_ranks.append(Train_ranks())
         train_ranks[i].name = Rank
         filename = Rank + '.jpg'
