@@ -51,8 +51,9 @@ if PiOrUSB == 2:
 # Use counter variable to switch from isolating Rank to isolating Suit
 i = 1
 
-for Name in ['reito_lantern','ornate_kanzashi', 'ghostly_wings', 'plains', 'ninija_of_the_deep_hours']:
-
+#for Name in ['reito_lantern','ornate_kanzashi', 'ghostly_wings', 'plains', 'ninija_of_the_deep_hours', 'path_of_angers_flame', 'phantom_nomad', 'forest', 'divine_light',]:
+for Name in ['freed_from_the_real','sift_through_sands', 'sacura_tribe_scout']:
+    
     filename = Name + '.jpg'
 
     print('Press "p" to take a picture of ' + filename)
