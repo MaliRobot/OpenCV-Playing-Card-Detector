@@ -18,8 +18,8 @@ BKG_THRESH = 60
 CARD_THRESH = 30
 
 # Width and height of card corner, where rank and suit are
-CORNER_WIDTH = 210
-CORNER_HEIGHT = 190
+CORNER_WIDTH = 600
+CORNER_HEIGHT = 570
 
 # Dimensions of rank train images
 RANK_WIDTH = 70
@@ -95,7 +95,7 @@ def preprocess_image(image):
     img_w, img_h = np.shape(image)[:2]
     bkg_level = gray[int(img_h/25)][int(img_w/2)]
     thresh_level = bkg_level + BKG_THRESH
-    if thresh_level < 100: thresh_level = 100
+#    if thresh_level < 100: thresh_level = 100
     retval, thresh = cv2.threshold(blur,thresh_level,255,cv2.THRESH_BINARY)
     
     return thresh

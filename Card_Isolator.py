@@ -121,7 +121,7 @@ for Name in ['reito_lantern','ornate_kanzashi', 'ghostly_wings']:
             if debug_pics: cv2.imwrite(debug_path + "1_rectangle.jpg",warp)
             
             # Grab corner of card image, zoom, and threshold
-            corner = warp[20:190, 0:210]
+            corner = warp[60:570, 0:630]
             
             if debug_pics: cv2.imwrite(debug_path + "2_corner.jpg",corner)
         
