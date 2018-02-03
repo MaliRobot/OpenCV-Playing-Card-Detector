@@ -22,10 +22,10 @@ CORNER_WIDTH = 600
 CORNER_HEIGHT = 570
 
 # Dimensions of rank train images
-RANK_WIDTH = 70
-RANK_HEIGHT = 125
+RANK_WIDTH = 800
+RANK_HEIGHT = 600
 
-RANK_DIFF_MAX = 5000
+RANK_DIFF_MAX = 200000
 
 CARD_MAX_AREA = 120000
 CARD_MIN_AREA = 25000
@@ -67,7 +67,7 @@ def load_ranks(filepath):
 #    for Rank in ['reito_lantern','ornate_kanzashi', 'ghostly_wings', 'plains', 'ninija_of_the_deep_hours', 'path_of_angers_flame', 'phantom_nomad', 'divine_light',
 #              'freed_from_the_real','sift_through_sands', 'ryusei_the_falling_star', 'setons_desire', 'dripping_tongue_zubera', 'sacura_tribe_scout', 'jugan_the_rising_star', 
 #              'locust_miser', 'divergent_growth_rob_alexander', 'plains_matthew_mitchell', 'plains_basic_land', 'forest_quinton_hoover', 'plains_ben_thompson', 'whispering_shade']:
-    for Rank in ['reito_lantern','ornate_kanzashi', 'ghostly_wings']:
+    for Rank in ['reito_lantern','ornate_kanzashi', 'free_from_the_real', 'free_from_the_real', 'sakura_tribe_scout', 'plains_ben_thomposon']:
         
         train_ranks.append(Train_ranks())
         train_ranks[i].name = Rank
@@ -171,18 +171,20 @@ def preprocess_card(contour, image):
 
     # Grab corner of warped card image and do a 4x zoom
     Qcorner = qCard.warp[10:CORNER_HEIGHT-10, 0:CORNER_WIDTH]
+    
 #    Qcorner_zoom = cv2.resize(Qcorner, (0,0), fx=4, fy=4)
 
     # Sample known white pixel intensity to determine good threshold level
     white_level = Qcorner[15,int((CORNER_WIDTH)/2)]
     thresh_level = white_level - CARD_THRESH
+
     if (thresh_level <= 0):
         thresh_level = 1
-    retval, query_thresh = cv2.threshold(Qcorner, 120, 255, cv2. THRESH_BINARY)
+    retval, query_thresh = cv2.threshold(Qcorner, thresh_level, 255, cv2. THRESH_BINARY)
     ''' TODO issue with dynamic lightning '''
     # Split in to top and bottom half (top shows rank, bottom shows suit)
-    Qrank = query_thresh #[20:185, 0:128]
-    cv2.imshow("Card Detectorsss",query_thresh)
+    Qrank = query_thresh 
+    cv2.imshow("Card Detector",query_thresh)
     # Find rank contour and bounding rectangle, isolate and find largest contour
     dummy, Qrank_cnts, hier = cv2.findContours(Qrank, cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
     Qrank_cnts = sorted(Qrank_cnts, key=cv2.contourArea,reverse=True)
@@ -202,10 +204,9 @@ def match_card(qCard, train_ranks):
     the query card rank images with the train rank images.
     The best match is the rank image that has the least difference."""
 
-    best_rank_match_diff = 10000
+    best_rank_match_diff = 3000000
     best_rank_match_name = "Unknown"
     best_rank_name = None
-    i = 0
 
     # If no contours were found in query card in preprocess_card function,
     # the img size is zero, so skip the differencing process
@@ -218,11 +219,14 @@ def match_card(qCard, train_ranks):
             if Trank.img is None:
                 continue
             diff_img = cv2.absdiff(qCard.rank_img, Trank.img)
+
             rank_diff = int(np.sum(diff_img)/255)
+            print(rank_diff)
             if rank_diff < best_rank_match_diff:
-                best_rank_diff_img = diff_img
+                print('best')
                 best_rank_match_diff = rank_diff
                 best_rank_name = Trank.name
+                print(Trank.name)
 
     # Combine best rank match and best suit match to get query card's identity.
     # If the best matches have too high of a difference value, card identity

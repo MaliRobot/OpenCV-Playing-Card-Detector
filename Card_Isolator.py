@@ -22,8 +22,8 @@ debug_path = os.path.dirname(os.path.abspath(__file__)) + '/Debug_Imgs/'
 IM_WIDTH = 800
 IM_HEIGHT = 600 
 
-RANK_WIDTH = 70
-RANK_HEIGHT = 125
+RANK_WIDTH = 800
+RANK_HEIGHT = 600
 
 SUIT_WIDTH = 70
 SUIT_HEIGHT = 100
@@ -51,11 +51,8 @@ if PiOrUSB == 2:
 # Use counter variable to switch from isolating Rank to isolating Suit
 i = 1
 
-#for Name in ['reito_lantern','ornate_kanzashi', 'ghostly_wings', 'plains', 'ninija_of_the_deep_hours', 'path_of_angers_flame', 'phantom_nomad', 'divine_light',
-#              'freed_from_the_real','sift_through_sands', 'ryusei_the_falling_star', 'setons_desire', 'dripping_tongue_zubera', 'sacura_tribe_scout', 'jugan_the_rising_star', 
-#              'locust_miser', 'divergent_growth_rob_alexander', 'plains_matthew_mitchell', 'plains_basic_land', 'forest_quinton_hoover', 'plains_ben_thompson', 'whispering_shade']:
-for Name in ['reito_lantern','ornate_kanzashi', 'ghostly_wings']:
-    
+for Name in ['reito_lantern','ornate_kanzashi', 'free_from_the_real', 'free_from_the_real', 'sakura_tribe_scout', 'plains_ben_thomposon']:
+
     filename = Name + '.jpg'
     
     while True:
@@ -133,16 +130,15 @@ for Name in ['reito_lantern','ornate_kanzashi', 'ghostly_wings']:
             retval, corner_thresh = cv2.threshold(corner_blur, 120, 255, cv2. THRESH_BINARY)
         
             if debug_pics: cv2.imwrite(debug_path + "4_thresh.jpg",corner_thresh)
-            rank = corner_thresh[0:165, 0:800] # Grabs portion of image that shows rank
+
+            dummy, cnts, hier = cv2.findContours(corner_thresh, cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+            cnts = sorted(cnts, key=cv2.contourArea,reverse=True)
         
-            dummy, rank_cnts, hier = cv2.findContours(rank, cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
-            rank_cnts = sorted(rank_cnts, key=cv2.contourArea,reverse=True)
+            x,y,w,h = cv2.boundingRect(cnts[0])
         
-            x,y,w,h = cv2.boundingRect(rank_cnts[0])
-        
-            rank_roi = rank[y:y+h, x:x+w]
-            rank_sized = cv2.resize(rank_roi, (RANK_WIDTH, RANK_HEIGHT), 0, 0)
-            final_img = rank_sized
+            roi = corner_thresh[y:y+h, x:x+w]
+            sized = cv2.resize(roi, (RANK_WIDTH, RANK_HEIGHT), 0, 0)
+            final_img = sized
         
             cv2.imshow("Image",final_img)
         
