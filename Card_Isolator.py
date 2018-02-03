@@ -51,9 +51,10 @@ if PiOrUSB == 2:
 # Use counter variable to switch from isolating Rank to isolating Suit
 i = 1
 
-for Name in ['reito_lantern','ornate_kanzashi', 'ghostly_wings', 'plains', 'ninija_of_the_deep_hours', 'path_of_angers_flame', 'phantom_nomad', 'forest', 'divine_light',
-              'freed_from_the_real','sift_through_sands', 'ryusei_the_falling_star', 'setons_desire', 'dripping_tongue_zubera', 'sacura_tribe_scout', 'jugan_the_rising_star', 
-              'locust_miser', 'divergent_growth_rob_alexander', 'plains_matthew_mitchell', 'plains_basic_land', 'forest_quinton_hoover', 'plains_ben_thompson', 'whispering_shade']:
+#for Name in ['reito_lantern','ornate_kanzashi', 'ghostly_wings', 'plains', 'ninija_of_the_deep_hours', 'path_of_angers_flame', 'phantom_nomad', 'divine_light',
+#              'freed_from_the_real','sift_through_sands', 'ryusei_the_falling_star', 'setons_desire', 'dripping_tongue_zubera', 'sacura_tribe_scout', 'jugan_the_rising_star', 
+#              'locust_miser', 'divergent_growth_rob_alexander', 'plains_matthew_mitchell', 'plains_basic_land', 'forest_quinton_hoover', 'plains_ben_thompson', 'whispering_shade']:
+for Name in ['reito_lantern','ornate_kanzashi', 'ghostly_wings']:
     
     filename = Name + '.jpg'
     

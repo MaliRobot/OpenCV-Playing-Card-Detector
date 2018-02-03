@@ -64,7 +64,11 @@ def load_ranks(filepath):
     train_ranks = []
     i = 0
     
-    for Rank in  ['reito_lantern','ornate_kanzashi', 'ghostly_wings', 'plains', 'ninija_of_the_deep_hours']:
+#    for Rank in ['reito_lantern','ornate_kanzashi', 'ghostly_wings', 'plains', 'ninija_of_the_deep_hours', 'path_of_angers_flame', 'phantom_nomad', 'divine_light',
+#              'freed_from_the_real','sift_through_sands', 'ryusei_the_falling_star', 'setons_desire', 'dripping_tongue_zubera', 'sacura_tribe_scout', 'jugan_the_rising_star', 
+#              'locust_miser', 'divergent_growth_rob_alexander', 'plains_matthew_mitchell', 'plains_basic_land', 'forest_quinton_hoover', 'plains_ben_thompson', 'whispering_shade']:
+    for Rank in ['reito_lantern','ornate_kanzashi', 'ghostly_wings']:
+        
         train_ranks.append(Train_ranks())
         train_ranks[i].name = Rank
         filename = Rank + '.jpg'
@@ -211,13 +215,14 @@ def match_card(qCard, train_ranks):
         # Difference the query card rank image from each of the train rank images,
         # and store the result with the least difference
         for Trank in train_ranks:
-
-                diff_img = cv2.absdiff(qCard.rank_img, Trank.img)
-                rank_diff = int(np.sum(diff_img)/255)
-                if rank_diff < best_rank_match_diff:
-                    best_rank_diff_img = diff_img
-                    best_rank_match_diff = rank_diff
-                    best_rank_name = Trank.name
+            if Trank.img is None:
+                continue
+            diff_img = cv2.absdiff(qCard.rank_img, Trank.img)
+            rank_diff = int(np.sum(diff_img)/255)
+            if rank_diff < best_rank_match_diff:
+                best_rank_diff_img = diff_img
+                best_rank_match_diff = rank_diff
+                best_rank_name = Trank.name
 
     # Combine best rank match and best suit match to get query card's identity.
     # If the best matches have too high of a difference value, card identity
@@ -306,8 +311,8 @@ def flattener(image, pts, w, h):
             temp_rect[3] = pts[1][0] # Bottom left
             
         
-    maxWidth = 200
-    maxHeight = 300
+    maxWidth = 600
+    maxHeight = 900
 
     # Create destination array, calculate perspective transform matrix,
     # and warp card image
