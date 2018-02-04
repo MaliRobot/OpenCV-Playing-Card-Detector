@@ -27,8 +27,8 @@ RANK_HEIGHT = 600
 
 RANK_DIFF_MAX = 200000
 
-CARD_MAX_AREA = 120000
-CARD_MIN_AREA = 25000
+CARD_MAX_AREA = 1000000
+CARD_MIN_AREA = 80000
 
 font = cv2.FONT_HERSHEY_SIMPLEX
 
@@ -67,7 +67,8 @@ def load_ranks(filepath):
 #    for Rank in ['reito_lantern','ornate_kanzashi', 'ghostly_wings', 'plains', 'ninija_of_the_deep_hours', 'path_of_angers_flame', 'phantom_nomad', 'divine_light',
 #              'freed_from_the_real','sift_through_sands', 'ryusei_the_falling_star', 'setons_desire', 'dripping_tongue_zubera', 'sacura_tribe_scout', 'jugan_the_rising_star', 
 #              'locust_miser', 'divergent_growth_rob_alexander', 'plains_matthew_mitchell', 'plains_basic_land', 'forest_quinton_hoover', 'plains_ben_thompson', 'whispering_shade']:
-    for Rank in ['reito_lantern','ornate_kanzashi', 'free_from_the_real', 'free_from_the_real', 'sakura_tribe_scout', 'plains_ben_thomposon']:
+    for Rank in ['reito_lantern','ornate_kanzashi', 'free_from_the_real', 'free_from_the_real', 'sakura_tribe_scout', 'plains_ben_thomposon',
+                 'path_of_angers_flame', 'sift_through_sands', 'setons_desire', 'phantom_nomad', 'divine_light']:
         
         train_ranks.append(Train_ranks())
         train_ranks[i].name = Rank
@@ -106,7 +107,9 @@ def find_cards(thresh_image):
     from largest to smallest."""
     # Find contours and sort their indices by contour size
     dummy,cnts,hier = cv2.findContours(thresh_image,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+
     index_sort = sorted(range(len(cnts)), key=lambda i : cv2.contourArea(cnts[i]),reverse=True)
+    index_sort = [x for x in index_sort if cnts[x].size > 600 and cnts[x].size < 800]
 
     # If there are no contours, do nothing
     if len(cnts) == 0:
@@ -142,23 +145,18 @@ def find_cards(thresh_image):
     return cnts_sort, cnt_is_card
 
 def get_treshold(Qcorner):
-#    white_level = Qcorner[15,int((CORNER_WIDTH)/2)]
-#    thresh_level = white_level - CARD_THRESH
-#
-#    if (thresh_level <= 0):
-#        thresh_level = 1
-#    if (thresh_level > 150):
-#        thresh_level = 150
-#    print('thresh_level: ', thresh_level)
-    query_thresh = cv2.adaptiveThreshold(Qcorner,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,\
-            cv2.THRESH_BINARY,11,2)
+    white_level = Qcorner[15,int((CORNER_WIDTH)/2)]
+    thresh_level = white_level - CARD_THRESH
 
-#    retval, query_thresh = cv2.threshold(Qcorner, thresh_level, 255, cv2.THRESH_TRUNC)
+    if (thresh_level <= 0):
+        thresh_level = 1
+
+    retval, query_thresh = cv2.threshold(Qcorner, thresh_level, 255, cv2.THRESH_TRUNC)
     return query_thresh
 
 def preprocess_card(contour, image):
-    """Uses contour to find information about the query card. Isolates rank
-    and suit images from the card."""
+    """Uses contour to find information about the query card. Isolates images
+    from the card."""
 
     # Initialize new Query_card object
     qCard = Query_card()
@@ -187,12 +185,6 @@ def preprocess_card(contour, image):
     # Grab corner of warped card image and do a 4x zoom
     Qcorner = qCard.warp[10:CORNER_HEIGHT-10, 0:CORNER_WIDTH]
     
-#    Qcorner_zoom = cv2.resize(Qcorner, (0,0), fx=4, fy=4)
-
-    # Sample known white pixel intensity to determine good threshold level
-#    query_thresh = get_treshold(Qcorner)
-
-    ''' TODO issue with dynamic lightning '''
     # Split in to top and bottom half (top shows rank, bottom shows suit)
     Qrank = Qcorner 
     cv2.imshow("Card Detector",Qcorner)
@@ -236,10 +228,7 @@ def match_card(qCard, train_ranks):
             if rank_diff < best_rank_match_diff:
                 best_rank_match_diff = rank_diff
                 best_rank_name = Trank.name
-                if (rank_diff < 200000):
-                    print(rank_diff)
-                    print(Trank.name)
-
+                
     # Combine best rank match and best suit match to get query card's identity.
     # If the best matches have too high of a difference value, card identity
     # is still Unknown

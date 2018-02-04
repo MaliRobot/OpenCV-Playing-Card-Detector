@@ -51,8 +51,10 @@ if PiOrUSB == 2:
 # Use counter variable to switch from isolating Rank to isolating Suit
 i = 1
 
-for Name in ['reito_lantern','ornate_kanzashi', 'free_from_the_real', 'sakura_tribe_scout', 'plains_ben_thomposon']:
-
+#for Name in ['reito_lantern','ornate_kanzashi', 'free_from_the_real', 'sakura_tribe_scout', 'plains_ben_thomposon']:
+#for Name in ['path_of_angers_flame', 'sift_through_sands', 'setons_desire', 'phantom_nomad', 'divine_light']:
+for Name in ['ghostly_wings', 'plains_fred_fields', 'locust_mister', 'jugan_the_rising_star']:
+    
     filename = Name + '.jpg'
     
     while True:
@@ -127,10 +129,6 @@ for Name in ['reito_lantern','ornate_kanzashi', 'free_from_the_real', 'sakura_tr
             
             if debug_pics: cv2.imwrite(debug_path + "3_after_blur.jpg",corner_blur)
         
-#            corner_thresh = Cards.get_treshold(corner_blur)
-        
-#            if debug_pics: cv2.imwrite(debug_path + "4_thresh.jpg",corner_thresh)
-
             dummy, cnts, hier = cv2.findContours(corner_blur, cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
             cnts = sorted(cnts, key=cv2.contourArea,reverse=True)
         

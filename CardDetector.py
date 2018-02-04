@@ -64,7 +64,7 @@ while cam_quit == 0:
 	
     # Find and sort the contours of all cards in the image (query cards)
     cnts_sort, cnt_is_card = Cards.find_cards(pre_proc)
-    
+
     # If there are no contours, do nothing
     if len(cnts_sort) != 0:
 
