@@ -141,6 +141,21 @@ def find_cards(thresh_image):
 
     return cnts_sort, cnt_is_card
 
+def get_treshold(Qcorner):
+#    white_level = Qcorner[15,int((CORNER_WIDTH)/2)]
+#    thresh_level = white_level - CARD_THRESH
+#
+#    if (thresh_level <= 0):
+#        thresh_level = 1
+#    if (thresh_level > 150):
+#        thresh_level = 150
+#    print('thresh_level: ', thresh_level)
+    query_thresh = cv2.adaptiveThreshold(Qcorner,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,\
+            cv2.THRESH_BINARY,11,2)
+
+#    retval, query_thresh = cv2.threshold(Qcorner, thresh_level, 255, cv2.THRESH_TRUNC)
+    return query_thresh
+
 def preprocess_card(contour, image):
     """Uses contour to find information about the query card. Isolates rank
     and suit images from the card."""
@@ -175,16 +190,12 @@ def preprocess_card(contour, image):
 #    Qcorner_zoom = cv2.resize(Qcorner, (0,0), fx=4, fy=4)
 
     # Sample known white pixel intensity to determine good threshold level
-    white_level = Qcorner[15,int((CORNER_WIDTH)/2)]
-    thresh_level = white_level - CARD_THRESH
+#    query_thresh = get_treshold(Qcorner)
 
-    if (thresh_level <= 0):
-        thresh_level = 1
-    retval, query_thresh = cv2.threshold(Qcorner, thresh_level, 255, cv2. THRESH_BINARY)
     ''' TODO issue with dynamic lightning '''
     # Split in to top and bottom half (top shows rank, bottom shows suit)
-    Qrank = query_thresh 
-    cv2.imshow("Card Detector",query_thresh)
+    Qrank = Qcorner 
+    cv2.imshow("Card Detector",Qcorner)
     # Find rank contour and bounding rectangle, isolate and find largest contour
     dummy, Qrank_cnts, hier = cv2.findContours(Qrank, cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
     Qrank_cnts = sorted(Qrank_cnts, key=cv2.contourArea,reverse=True)
@@ -221,12 +232,13 @@ def match_card(qCard, train_ranks):
             diff_img = cv2.absdiff(qCard.rank_img, Trank.img)
 
             rank_diff = int(np.sum(diff_img)/255)
-            print(rank_diff)
+
             if rank_diff < best_rank_match_diff:
-                print('best')
                 best_rank_match_diff = rank_diff
                 best_rank_name = Trank.name
-                print(Trank.name)
+                if (rank_diff < 200000):
+                    print(rank_diff)
+                    print(Trank.name)
 
     # Combine best rank match and best suit match to get query card's identity.
     # If the best matches have too high of a difference value, card identity
