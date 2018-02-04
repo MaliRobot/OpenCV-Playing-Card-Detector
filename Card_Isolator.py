@@ -130,8 +130,8 @@ for Name in ['reito_lantern','ornate_kanzashi', 'free_from_the_real',
             
             if debug_pics: cv2.imwrite(debug_path + "2_corner.jpg",corner)
         
-        #    corner_zoom = cv2.resize(corner, (0,0), fx=4, fy=4)
-            corner_blur = cv2.GaussianBlur(corner,(5,5),0)
+            corner_zoom = cv2.resize(corner, (0,0), fx=4, fy=4)
+            corner_blur = cv2.GaussianBlur(corner_zoom,(5,5),0)
             
             if debug_pics: cv2.imwrite(debug_path + "3_after_blur.jpg",corner_blur)
         
