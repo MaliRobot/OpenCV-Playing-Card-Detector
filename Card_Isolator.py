@@ -51,10 +51,15 @@ if PiOrUSB == 2:
 # Use counter variable to switch from isolating Rank to isolating Suit
 i = 1
 
-#for Name in ['reito_lantern','ornate_kanzashi', 'free_from_the_real', 'sakura_tribe_scout', 'plains_ben_thomposon']:
-#for Name in ['path_of_angers_flame', 'sift_through_sands', 'setons_desire', 'phantom_nomad', 'divine_light']:
-for Name in ['ghostly_wings', 'plains_fred_fields', 'locust_mister', 'jugan_the_rising_star']:
-    
+for Name in ['reito_lantern','ornate_kanzashi', 'free_from_the_real', 
+              'sakura_tribe_scout', 'plains_ben_thomposon', 'path_of_angers_flame', 
+              'sift_through_sands', 'setons_desire', 'phantom_nomad', 
+              'divine_light', 'ghostly_wings', 'plains_fred_fields', 'locust_mister',
+              'jugan_the_rising_star', 'whispering_shade', 'divergent_growth', 
+              'ryusei_the_falling_star', 'dripping_tongue_zubera',
+              'ninja_of_the _deep_hours', 'plains_matthew_mitchell', 'plains_greg_staples',
+              'forest_quinton_hoover', 'forest_john_avon']:
+
     filename = Name + '.jpg'
     
     while True:
@@ -97,6 +102,7 @@ for Name in ['ghostly_wings', 'plains_fred_fields', 'locust_mister', 'jugan_the_
             # Find contours and sort them by size
             dummy,cnts,hier = cv2.findContours(thresh,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
             cnts = sorted(cnts, key=cv2.contourArea,reverse=True)
+            cnts = [x for x in cnts if cv2.contourArea(x) > 50000]
         
             # Assume largest contour is the card. If there are no contours, print an error
             flag = 0
@@ -141,12 +147,13 @@ for Name in ['ghostly_wings', 'plains_fred_fields', 'locust_mister', 'jugan_the_
             cv2.imshow("Image",final_img)
         
             # Save image
-            print('Press "c" to continue.')
+            print('Press "c" to save or "n" to proceed to next image.')
             key = cv2.waitKey(0) & 0xFF
             if key == ord('c'):
                 cv2.imwrite(img_path+filename,final_img)
                 break
-        
+            elif key == ord('n'):
+                break
             i = i + 1
         except Exception as e:
             print(e)

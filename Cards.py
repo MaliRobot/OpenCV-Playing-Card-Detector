@@ -64,11 +64,14 @@ def load_ranks(filepath):
     train_ranks = []
     i = 0
     
-#    for Rank in ['reito_lantern','ornate_kanzashi', 'ghostly_wings', 'plains', 'ninija_of_the_deep_hours', 'path_of_angers_flame', 'phantom_nomad', 'divine_light',
-#              'freed_from_the_real','sift_through_sands', 'ryusei_the_falling_star', 'setons_desire', 'dripping_tongue_zubera', 'sacura_tribe_scout', 'jugan_the_rising_star', 
-#              'locust_miser', 'divergent_growth_rob_alexander', 'plains_matthew_mitchell', 'plains_basic_land', 'forest_quinton_hoover', 'plains_ben_thompson', 'whispering_shade']:
-    for Rank in ['reito_lantern','ornate_kanzashi', 'free_from_the_real', 'free_from_the_real', 'sakura_tribe_scout', 'plains_ben_thomposon',
-                 'path_of_angers_flame', 'sift_through_sands', 'setons_desire', 'phantom_nomad', 'divine_light']:
+    for Rank in ['reito_lantern','ornate_kanzashi', 'free_from_the_real', 
+              'sakura_tribe_scout', 'plains_ben_thomposon', 'path_of_angers_flame', 
+              'sift_through_sands', 'setons_desire', 'phantom_nomad', 
+              'divine_light', 'ghostly_wings', 'plains_fred_fields', 'locust_mister',
+              'jugan_the_rising_star', 'whispering_shade', 'divergent_growth', 
+              'ryusei_the_falling_star', 'dripping_tongue_zubera',
+              'ninja_of_the _deep_hours', 'plains_matthew_mitchell', 'plains_greg_staples',
+              'forest_quinton_hoover', 'forest_john_avon']:
         
         train_ranks.append(Train_ranks())
         train_ranks[i].name = Rank
@@ -109,7 +112,7 @@ def find_cards(thresh_image):
     dummy,cnts,hier = cv2.findContours(thresh_image,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
 
     index_sort = sorted(range(len(cnts)), key=lambda i : cv2.contourArea(cnts[i]),reverse=True)
-    index_sort = [x for x in index_sort if cnts[x].size > 600 and cnts[x].size < 800]
+    index_sort = [x for x in index_sort if cv2.contourArea(cnts[x]) > 50000]
 
     # If there are no contours, do nothing
     if len(cnts) == 0:
