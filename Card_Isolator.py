@@ -22,8 +22,8 @@ debug_path = os.path.dirname(os.path.abspath(__file__)) + '/Debug_Imgs/'
 IM_WIDTH = 800
 IM_HEIGHT = 600 
 
-RANK_WIDTH = 800
-RANK_HEIGHT = 600
+RANK_WIDTH = 400
+RANK_HEIGHT = 580
 
 SUIT_WIDTH = 70
 SUIT_HEIGHT = 100
@@ -98,11 +98,18 @@ for Name in ['reito_lantern','ornate_kanzashi', 'free_from_the_real',
         try:
             # Pre-process image
             thresh = Cards.preprocess_image(image)
-        
+            
+            # try this for white border card
+            thresh2 = Cards.preprocess_image(cv2.bitwise_not(image))
+            if debug_pics: cv2.imwrite(debug_path + "0_prepare.jpg",thresh2)
+            #
+            
             # Find contours and sort them by size
             dummy,cnts,hier = cv2.findContours(thresh,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+            for c in cnts: 
+                print(len(c))
             cnts = sorted(cnts, key=cv2.contourArea,reverse=True)
-            cnts = [x for x in cnts if cv2.contourArea(x) > 50000]
+#            cnts = [x for x in cnts if cv2.contourArea(x) > 50000]
         
             # Assume largest contour is the card. If there are no contours, print an error
             flag = 0
@@ -124,23 +131,23 @@ for Name in ['reito_lantern','ornate_kanzashi', 'free_from_the_real',
             # Flatten the card and convert it to 200x300
             warp = Cards.flattener(image,pts,w,h)
             if debug_pics: cv2.imwrite(debug_path + "1_rectangle.jpg",warp)
-            
-            # Grab corner of card image, zoom, and threshold
-            corner = warp[60:570, 0:630]
-            
-            if debug_pics: cv2.imwrite(debug_path + "2_corner.jpg",corner)
+#            
+#            # Grab corner of card image, zoom, and threshold
+#            corner = warp[60:570, 0:630]
+#            
+#            if debug_pics: cv2.imwrite(debug_path + "2_corner.jpg",corner)
+#        
+#            corner_zoom = cv2.resize(corner, (0,0), fx=4, fy=4)
+#            corner_blur = cv2.GaussianBlur(corner_zoom,(5,5),0)
+#            
+#            if debug_pics: cv2.imwrite(debug_path + "3_after_blur.jpg",corner_blur)
         
-            corner_zoom = cv2.resize(corner, (0,0), fx=4, fy=4)
-            corner_blur = cv2.GaussianBlur(corner_zoom,(5,5),0)
-            
-            if debug_pics: cv2.imwrite(debug_path + "3_after_blur.jpg",corner_blur)
-        
-            dummy, cnts, hier = cv2.findContours(corner_blur, cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+            dummy, cnts, hier = cv2.findContours(warp, cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
             cnts = sorted(cnts, key=cv2.contourArea,reverse=True)
         
             x,y,w,h = cv2.boundingRect(cnts[0])
         
-            roi = corner_blur[y:y+h, x:x+w]
+            roi = warp[y:y+h, x:x+w]
             sized = cv2.resize(roi, (RANK_WIDTH, RANK_HEIGHT), 0, 0)
             final_img = sized
         

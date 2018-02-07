@@ -86,7 +86,6 @@ def preprocess_image(image):
 
     gray = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
     gray = cv2.bitwise_not(gray)
-    cv2.imwrite('/Debug_Imgs/' + "0_rectangle.jpg",gray)
     blur = cv2.GaussianBlur(gray,(5,5),0)
 
     # The best threshold level depends on the ambient lighting conditions.
@@ -101,6 +100,10 @@ def preprocess_image(image):
     img_w, img_h = np.shape(image)[:2]
     bkg_level = gray[int(img_h/25)][int(img_w/2)]
     thresh_level = bkg_level + BKG_THRESH
+    
+    # try this for white border card
+#    thresh_level = 100
+    #
 
     retval, thresh = cv2.threshold(blur,thresh_level,255,cv2.THRESH_BINARY)
     
