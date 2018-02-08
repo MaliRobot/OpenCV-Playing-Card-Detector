@@ -146,6 +146,7 @@ def find_cards(thresh_image, thresh_image_white):
     if len(cnts) < len(cnts_wht):
         cnts = cnts_wht
         hier = hier_wht
+        index_sort = index_sort_wht
     
     # Otherwise, initialize empty sorted contour and hierarchy lists
     cnts_sort = []
@@ -164,7 +165,6 @@ def find_cards(thresh_image, thresh_image_white):
     # following criteria: 1) Smaller area than the maximum card size,
     # 2), bigger area than the minimum card size, 3) have no parents,
     # and 4) have four corners
-
     for i in range(len(cnts_sort)):
         size = cv2.contourArea(cnts_sort[i])
         peri = cv2.arcLength(cnts_sort[i],True)
@@ -255,7 +255,7 @@ def match_card(qCard, train_ranks):
             if rank_diff < best_rank_match_diff:
                 best_rank_match_diff = rank_diff
                 best_rank_name = Trank.name
-                
+
     # Combine best rank match and best suit match to get query card's identity.
     # If the best matches have too high of a difference value, card identity
     # is still Unknown
