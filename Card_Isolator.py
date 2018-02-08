@@ -51,14 +51,16 @@ if PiOrUSB == 2:
 # Use counter variable to switch from isolating Rank to isolating Suit
 i = 1
 
-for Name in ['reito_lantern','ornate_kanzashi', 'free_from_the_real', 
-              'sakura_tribe_scout', 'plains_ben_thomposon', 'path_of_angers_flame', 
-              'sift_through_sands', 'setons_desire', 'phantom_nomad', 
-              'divine_light', 'ghostly_wings', 'plains_fred_fields', 'locust_mister',
-              'jugan_the_rising_star', 'whispering_shade', 'divergent_growth', 
-              'ryusei_the_falling_star', 'dripping_tongue_zubera',
-              'ninja_of_the _deep_hours', 'plains_matthew_mitchell', 'plains_greg_staples',
-              'forest_quinton_hoover', 'forest_john_avon']:
+#for Name in ['reito_lantern','ornate_kanzashi', 'free_from_the_real', 
+#              'sakura_tribe_scout', 'plains_ben_thomposon', 'path_of_angers_flame', 
+#              'sift_through_sands', 'setons_desire', 'phantom_nomad', 
+#              'divine_light', 'ghostly_wings', 'plains_fred_fields', 'locust_mister',
+#              'jugan_the_rising_star', 'whispering_shade', 'divergent_growth', 
+#              'ryusei_the_falling_star', 'dripping_tongue_zubera',
+#              'ninja_of_the _deep_hours', 'plains_matthew_mitchell', 'plains_greg_staples',
+#              'forest_quinton_hoover', 'forest_john_avon']:
+    
+for Name in ['white']:
 
     filename = Name + '.jpg'
     
@@ -98,15 +100,14 @@ for Name in ['reito_lantern','ornate_kanzashi', 'free_from_the_real',
         try:
             # Pre-process image
             thresh = Cards.preprocess_image(image)
-            
-            # try this for white border card
-            thresh2 = Cards.preprocess_image(cv2.bitwise_not(image))
-            if debug_pics: cv2.imwrite(debug_path + "0_prepare.jpg",thresh2)
-            #
+            thresh_wb = Cards.preprocess_white_image(image)
+
+            if debug_pics: cv2.imwrite(debug_path + "0_prepare.jpg",thresh)
             
             # Find contours and sort them by size
             dummy,cnts,hier = cv2.findContours(thresh,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
-p
+#            dummy,cnts,hier = cv2.findContours(thresh,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+
             cnts = sorted(cnts, key=cv2.contourArea,reverse=True)
 #            cnts = [x for x in cnts if cv2.contourArea(x) > 50000]
         

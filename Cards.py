@@ -109,6 +109,21 @@ def preprocess_image(image):
     
     return thresh
 
+def preprocess_white_image(image):
+    """Returns a grayed, blurred, and adaptively thresholded camera image."""
+    gray = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
+    blur = cv2.GaussianBlur(gray,(5,5),0)
+    
+    img_w, img_h = np.shape(image)[:2]
+    bkg_level = gray[int(img_h/25)][int(img_w/2)]
+    thresh_level = bkg_level + BKG_THRESH
+
+#    if thresh_level < 100:
+    thresh_level = 110
+    retval, thresh = cv2.threshold(blur,thresh_level,255,cv2.THRESH_BINARY)
+    
+    return thresh
+
 def find_cards(thresh_image):
     """Finds all card-sized contours in a thresholded camera image.
     Returns the number of cards, and a list of card contours sorted
