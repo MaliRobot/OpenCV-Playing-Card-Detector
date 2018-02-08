@@ -22,8 +22,8 @@ debug_path = os.path.dirname(os.path.abspath(__file__)) + '/Debug_Imgs/'
 IM_WIDTH = 800
 IM_HEIGHT = 600 
 
-RANK_WIDTH = 400
-RANK_HEIGHT = 580
+RANK_WIDTH = 800
+RANK_HEIGHT = 600
 
 SUIT_WIDTH = 70
 SUIT_HEIGHT = 100

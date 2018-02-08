@@ -17,13 +17,13 @@ import time
 BKG_THRESH = 60
 CARD_THRESH = 30
 
-# Width and height of card corner, where rank and suit are
+# Width and height of card
 CORNER_WIDTH = 600
 CORNER_HEIGHT = 570
 
 # Dimensions of rank train images
-RANK_WIDTH = 800
-RANK_HEIGHT = 600
+RANK_WIDTH = 400
+RANK_HEIGHT = 580
 
 RANK_DIFF_MAX = 200000
 
@@ -190,23 +190,18 @@ def preprocess_card(contour, image):
     # Warp card into 200x300 flattened image using perspective transform
     qCard.warp = flattener(image, pts, w, h)
 
-    # Grab corner of warped card image and do a 4x zoom
-    Qcorner = qCard.warp[10:CORNER_HEIGHT-10, 0:CORNER_WIDTH]
-    
-    # Split in to top and bottom half (top shows rank, bottom shows suit)
-    Qrank = Qcorner 
-    cv2.imshow("Card Detector",Qcorner)
+    cv2.imshow("Card Detector",qCard.warp)
     # Find rank contour and bounding rectangle, isolate and find largest contour
-    dummy, Qrank_cnts, hier = cv2.findContours(Qrank, cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
-    Qrank_cnts = sorted(Qrank_cnts, key=cv2.contourArea,reverse=True)
+    dummy, qCard_cnts, hier = cv2.findContours(qCard.warp, cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+    qCard_cnts = sorted(qCard_cnts, key=cv2.contourArea,reverse=True)
 
     # Find bounding rectangle for largest contour, use it to resize query rank
     # image to match dimensions of the train rank image
-    if len(Qrank_cnts) != 0:
-        x1,y1,w1,h1 = cv2.boundingRect(Qrank_cnts[0])
-        Qrank_roi = Qrank[y1:y1+h1, x1:x1+w1]
-        Qrank_sized = cv2.resize(Qrank_roi, (RANK_WIDTH,RANK_HEIGHT), 0, 0)
-        qCard.rank_img = Qrank_sized
+    if len(qCard_cnts) != 0:
+        x1,y1,w1,h1 = cv2.boundingRect(qCard_cnts[0])
+        qCard_roi = qCard.warp[y1:y1+h1, x1:x1+w1]
+        qCard_sized = cv2.resize(qCard_roi, (RANK_WIDTH,RANK_HEIGHT), 0, 0)
+        qCard.rank_img = qCard_sized
 
     return qCard
 
@@ -229,6 +224,7 @@ def match_card(qCard, train_ranks):
         for Trank in train_ranks:
             if Trank.img is None:
                 continue
+            
             diff_img = cv2.absdiff(qCard.rank_img, Trank.img)
 
             rank_diff = int(np.sum(diff_img)/255)
