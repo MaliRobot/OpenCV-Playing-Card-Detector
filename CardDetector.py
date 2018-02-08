@@ -60,9 +60,10 @@ while cam_quit == 0:
 
     # Pre-process camera image (gray, blur, and threshold it)
     pre_proc = Cards.preprocess_image(image)
+    pre_proc_white = Cards.preprocess_white_image(image)
 	
     # Find and sort the contours of all cards in the image (query cards)
-    cnts_sort, cnt_is_card = Cards.find_cards(pre_proc)
+    cnts_sort, cnt_is_card = Cards.find_cards(pre_proc, pre_proc_white)
 
     # If there are no contours, do nothing
     if len(cnts_sort) != 0:

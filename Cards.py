@@ -27,8 +27,8 @@ RANK_HEIGHT = 580
 
 RANK_DIFF_MAX = 200000
 
-CARD_MAX_AREA = 1000000
-CARD_MIN_AREA = 80000
+CARD_MAX_AREA = 300000
+CARD_MIN_AREA = 60000
 
 font = cv2.FONT_HERSHEY_SIMPLEX
 
@@ -124,19 +124,28 @@ def preprocess_white_image(image):
     
     return thresh
 
-def find_cards(thresh_image):
+def find_cards(thresh_image, thresh_image_white):
     """Finds all card-sized contours in a thresholded camera image.
     Returns the number of cards, and a list of card contours sorted
     from largest to smallest."""
     # Find contours and sort their indices by contour size
     dummy,cnts,hier = cv2.findContours(thresh_image,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+    dummy,cnts_wht,hier_wht = cv2.findContours(thresh_image_white,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
 
     index_sort = sorted(range(len(cnts)), key=lambda i : cv2.contourArea(cnts[i]),reverse=True)
     index_sort = [x for x in index_sort if cv2.contourArea(cnts[x]) > 50000]
+    
+    index_sort_wht = sorted(range(len(cnts_wht)), key=lambda i : cv2.contourArea(cnts_wht[i]),reverse=True)
+    index_sort_wht = [x for x in index_sort_wht if cv2.contourArea(cnts_wht[x]) > 50000]
 
     # If there are no contours, do nothing
-    if len(cnts) == 0:
+    if len(cnts) == 0 and len(cnts_wht) == 0:
         return [], []
+
+    # decide if it's white or black border card
+    if len(cnts) < len(cnts_wht):
+        cnts = cnts_wht
+        hier = hier_wht
     
     # Otherwise, initialize empty sorted contour and hierarchy lists
     cnts_sort = []
@@ -160,7 +169,7 @@ def find_cards(thresh_image):
         size = cv2.contourArea(cnts_sort[i])
         peri = cv2.arcLength(cnts_sort[i],True)
         approx = cv2.approxPolyDP(cnts_sort[i],0.01*peri,True)
-        
+
         if ((size < CARD_MAX_AREA) and (size > CARD_MIN_AREA)
             and (hier_sort[i][3] == -1) and (len(approx) == 4)):
             cnt_is_card[i] = 1
