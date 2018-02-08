@@ -190,7 +190,6 @@ def preprocess_card(contour, image):
     # Warp card into 200x300 flattened image using perspective transform
     qCard.warp = flattener(image, pts, w, h)
 
-    cv2.imshow("Card Detector",qCard.warp)
     # Find rank contour and bounding rectangle, isolate and find largest contour
     dummy, qCard_cnts, hier = cv2.findContours(qCard.warp, cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
     qCard_cnts = sorted(qCard_cnts, key=cv2.contourArea,reverse=True)

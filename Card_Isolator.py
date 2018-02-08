@@ -22,8 +22,8 @@ debug_path = os.path.dirname(os.path.abspath(__file__)) + '/Debug_Imgs/'
 IM_WIDTH = 800
 IM_HEIGHT = 600 
 
-RANK_WIDTH = 800
-RANK_HEIGHT = 600
+RANK_WIDTH = 400
+RANK_HEIGHT = 580
 
 SUIT_WIDTH = 70
 SUIT_HEIGHT = 100
@@ -106,8 +106,7 @@ for Name in ['reito_lantern','ornate_kanzashi', 'free_from_the_real',
             
             # Find contours and sort them by size
             dummy,cnts,hier = cv2.findContours(thresh,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
-            for c in cnts: 
-                print(len(c))
+p
             cnts = sorted(cnts, key=cv2.contourArea,reverse=True)
 #            cnts = [x for x in cnts if cv2.contourArea(x) > 50000]
         
