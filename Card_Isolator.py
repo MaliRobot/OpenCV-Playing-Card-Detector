@@ -58,7 +58,12 @@ for Name in ['reito_lantern','ornate_kanzashi', 'free_from_the_real',
               'jugan_the_rising_star', 'whispering_shade', 'divergent_growth', 
               'ryusei_the_falling_star', 'dripping_tongue_zubera',
               'ninja_of_the _deep_hours', 'plains_matthew_mitchell', 'plains_greg_staples',
-              'forest_quinton_hoover', 'forest_john_avon']:
+              'forest_quinton_hoover', 'forest_john_avon', 'ghost_lit_refeemer', 
+              'kabuto_moth', 'kami_of_false_home', 'waxmane_baku', 'kami_of_tattered_shoji',
+              'ethereal_haze', 'joyous_respite', 'orochi_sustainer', 'orochi_ranger',
+              'commune_with_nature', 'petalmane_baku', 'scaled_hulk', 'harbinger_of_spring',
+              'traproot_kami', 'rending_vines', 'vital_surge', 'torrent_of_stone',
+              'descendant_of_soramaro', 'wandering_ones', 'orochi_sustainer', 'field_of_reality']:
 
     filename = Name + '.jpg'
     card = None
