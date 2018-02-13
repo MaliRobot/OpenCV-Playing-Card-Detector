@@ -113,9 +113,6 @@ for Name in ['reito_lantern','ornate_kanzashi', 'free_from_the_real',
             cnts_wht = sorted(cnts_wht, key=cv2.contourArea,reverse=True)
         
             # Assume largest contour is the card. If there are no contours, print an error
-            flag = 0
-            image2 = image.copy()
-            
             # Decide is it card with white or black background                
             if len(cnts) > 0:
                 card = cnts[0]
