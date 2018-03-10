@@ -165,7 +165,7 @@ def find_cards(thresh_image, thresh_image_white):
     for i in index_sort:
         cnts_sort.append(cnts[i])
         hier_sort.append(hier[0][i])
-
+    
     # Determine which of the contours are cards by applying the
     # following criteria: 1) Smaller area than the maximum card size,
     # 2), bigger area than the minimum card size, 3) have no parents,
@@ -174,7 +174,6 @@ def find_cards(thresh_image, thresh_image_white):
         size = cv2.contourArea(cnts_sort[i])
         peri = cv2.arcLength(cnts_sort[i],True)
         approx = cv2.approxPolyDP(cnts_sort[i],0.01*peri,True)
-
         if ((size < CARD_MAX_AREA) and (size > CARD_MIN_AREA)
             and (hier_sort[i][3] == -1) and (len(approx) == 4)):
             cnt_is_card[i] = 1
@@ -197,7 +196,6 @@ def preprocess_card(contour, image):
 
     # Initialize new Query_card object
     qCard = Query_card()
-
     qCard.contour = contour
 
     # Find perimeter of card and use it to approximate corner points
@@ -222,7 +220,7 @@ def preprocess_card(contour, image):
     # Find rank contour and bounding rectangle, isolate and find largest contour
     dummy, qCard_cnts, hier = cv2.findContours(qCard.warp, cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
     qCard_cnts = sorted(qCard_cnts, key=cv2.contourArea,reverse=True)
-
+    
     # Find bounding rectangle for largest contour, use it to resize query rank
     # image to match dimensions of the train rank image
     if len(qCard_cnts) != 0:
@@ -238,7 +236,7 @@ def match_card(qCard, train_ranks):
     the query card rank images with the train rank images.
     The best match is the rank image that has the least difference."""
 
-    best_rank_match_diff = 3000000
+    best_rank_match_diff = 50000
     best_rank_match_name = "Unknown"
     best_rank_name = None
 
@@ -252,11 +250,33 @@ def match_card(qCard, train_ranks):
         for Trank in train_ranks:
             if Trank.img is None:
                 continue
+            # image sizes are 580, 400 - change if required or do not hardcode
+            tlo = qCard.rank_img[0:40, 0:40]
+            tro = qCard.rank_img[0:40, 360:400]
+            blo = qCard.rank_img[540:580, 0:40]
+            bro = qCard.rank_img[540:580, 360:400]
             
+            tlc = Trank.img[0:40, 0:40]
+            trc = Trank.img[0:40, 360:400]
+            blc = Trank.img[540:580, 0:40]
+            brc = Trank.img[540:580, 360:400]
+            
+            q1 = cv2.matchTemplate(tlo, tlc, cv2.TM_SQDIFF)
+            q2 = cv2.matchTemplate(tro, trc, cv2.TM_SQDIFF)
+            q3 = cv2.matchTemplate(blo, blc, cv2.TM_SQDIFF)
+            q4 = cv2.matchTemplate(blo, blc, cv2.TM_SQDIFF)
+            print(q1,q2,q3,q4)
+            #
+            #
+            #
+            #
+            #
+            #
+            #
             diff_img = cv2.absdiff(qCard.rank_img, Trank.img)
 
             rank_diff = int(np.sum(diff_img)/255)
-
+            print(rank_diff)
             if rank_diff < best_rank_match_diff:
                 best_rank_match_diff = rank_diff
                 best_rank_name = Trank.name

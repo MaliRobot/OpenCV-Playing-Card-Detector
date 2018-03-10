@@ -18,7 +18,7 @@ import VideoStream
 ### ---- INITIALIZATION ---- ###
 # Define constants and initialize variables
 
-## Camera settings
+## Camera settingsq
 IM_WIDTH = 800
 IM_HEIGHT = 600 
 

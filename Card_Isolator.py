@@ -135,9 +135,9 @@ for Name in ['reito_lantern','ornate_kanzashi', 'free_from_the_real',
         
             dummy, cnts, hier = cv2.findContours(warp, cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
             cnts = sorted(cnts, key=cv2.contourArea,reverse=True)
-        
+                
             x,y,w,h = cv2.boundingRect(cnts[0])
-        
+
             roi = warp[y:y+h, x:x+w]
             sized = cv2.resize(roi, (RANK_WIDTH, RANK_HEIGHT), 0, 0)
             final_img = sized
