@@ -265,7 +265,7 @@ def match_card(qCard, train_ranks):
             q2 = cv2.matchTemplate(tro, trc, cv2.TM_SQDIFF)
             q3 = cv2.matchTemplate(blo, blc, cv2.TM_SQDIFF)
             q4 = cv2.matchTemplate(blo, blc, cv2.TM_SQDIFF)
-            print(q1,q2,q3,q4)
+            print(q1[0],q2[0],q3[0],q4[0])
             #
             #
             #
