@@ -236,7 +236,7 @@ def match_card(qCard, train_ranks):
     the query card rank images with the train rank images.
     The best match is the rank image that has the least difference."""
     RANK_DIFF_MAX = 6000000
-    best_rank_match_diff = 60000000
+    best_rank_match_diff = 20000000
     best_rank_match_name = "Unknown"
     best_rank_name = None
 
@@ -269,7 +269,7 @@ def match_card(qCard, train_ranks):
             score = (q1[0][0] + q2[0][0] + q3[0][0] + q4[0][0]) / 4
 
             print(score)
-            if score < best_rank_match_diff:
+            if score < best_rank_match_diff and score > 0:
 #                print(score, best_rank_match_diff)
                 best_rank_match_diff = score
                 best_rank_name = Trank.name
