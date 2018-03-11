@@ -1,5 +1,16 @@
 This is a version of OpenCV-Playing-Card-Detector adjusted for recognition of Magic The Gathering cards. It wasn't tested on Raspberry Pi, only PC.
 
+capture image:
+- place the card on the white background if card has white border and on black background if card has black border
+- once the camera is ready point it towards the card, try to catch only the card and white background, nothing else
+- when the program captures the image of the card it will appear next to the video feed
+- now you can save the image (use right click and "save as ..." for now)
+
+recognize image:
+- place the card on the white background if card has white border and on black background if card has black border
+- once the camera is ready point it towards the card, try to catch only the card and white background, nothing else
+- keep your camera steady as the progam tries the identify the card, the name of the closes match is shown on the right image, on the top of the card.
+
 # OpenCV-Playing-Card-Detector
 This is a Python program that uses OpenCV to detect and identify playing cards from a PiCamera video feed on a Raspberry Pi. Check out the YouTube video that describes what it does and how it works:
 
