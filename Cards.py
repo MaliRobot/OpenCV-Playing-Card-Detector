@@ -253,7 +253,7 @@ def match_card(qCard, train_ranks):
             if Trank.img is None:
                 continue
             
-            diff_img = cv2.absdiff(qCard.rank_img, Trank.img)
+            diff_img = cv2.absdiff(cv2.equalizeHist(qCard.rank_img), cv2.equalizeHist(Trank.img))
 
             rank_diff = int(np.sum(diff_img)/255)
             print(rank_diff)
