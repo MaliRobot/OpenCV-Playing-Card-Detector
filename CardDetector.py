@@ -35,7 +35,7 @@ font = cv2.FONT_HERSHEY_SIMPLEX
 # as a seperate thread that constantly grabs frames from the camera feed. 
 # See VideoStream.py for VideoStream class definition
 ## IF USING USB CAMERA INSTEAD OF PICAMERA,
-## CHANGE THE THIRD ARGUMENT FROM 1 TO 2 IN THE FOLLOWING LINE:
+## CHANGE THE THIRD ARGUMENT FROM q1 TO 2 IN THE FOLLOWING LINE:
 videostream = VideoStream.VideoStream((IM_WIDTH,IM_HEIGHT),FRAME_RATE,2,0).start()
 time.sleep(1) # Give the camera time to warm up
 
