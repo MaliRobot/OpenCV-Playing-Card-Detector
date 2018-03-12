@@ -25,7 +25,7 @@ CORNER_HEIGHT = 570
 RANK_WIDTH = 400
 RANK_HEIGHT = 580
 
-RANK_DIFF_MAX = 40000
+RANK_DIFF_MAX = 60000
 
 CARD_MAX_AREA = 300000
 CARD_MIN_AREA = 60000
@@ -238,7 +238,7 @@ def match_card(qCard, train_ranks):
     the query card rank images with the train rank images.
     The best match is the rank image that has the least difference."""
 
-    best_rank_match_diff = 40000
+    best_rank_match_diff = 60000
     best_rank_match_name = "Unknown"
     best_rank_name = None
 
