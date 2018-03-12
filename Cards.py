@@ -235,10 +235,11 @@ def match_card(qCard, train_ranks):
     """Finds best rank matches for the query card. Differences
     the query card rank images with the train rank images.
     The best match is the rank image that has the least difference."""
-    RANK_DIFF_MAX = 6000000
-    best_rank_match_diff = 60000000
+    best_rank_match_diff = 8000000
     best_rank_match_name = "Unknown"
     best_rank_name = None
+
+    qCard.rank_img = cv2.equalizeHist(qCard.rank_img)
 
     # If no contours were found in query card in preprocess_card function,
     # the img size is zero, so skip the differencing process
@@ -250,6 +251,8 @@ def match_card(qCard, train_ranks):
         for Trank in train_ranks:
             if Trank.img is None:
                 continue
+            Trank.img = cv2.equalizeHist(Trank.img)
+        
             # image sizes are 580, 400 - change if required or do not hardcode
             tlo = qCard.rank_img[0:80, 0:80]
             tro = qCard.rank_img[0:80, 320:400]
@@ -261,15 +264,15 @@ def match_card(qCard, train_ranks):
             blc = Trank.img[500:580, 0:80]
             brc = Trank.img[500:580, 320:400]
             
-            q1 = cv2.matchTemplate(tlo, tlc, cv2.TM_SQDIFF)
-            q2 = cv2.matchTemplate(tro, trc, cv2.TM_SQDIFF)
-            q3 = cv2.matchTemplate(blo, blc, cv2.TM_SQDIFF)
-            q4 = cv2.matchTemplate(bro, brc, cv2.TM_SQDIFF)
+            q1 = cv2.matchTemplate(tlo, tlc, cv2.TM_CCOEFF)
+            q2 = cv2.matchTemplate(tro, trc, cv2.TM_CCOEFF)
+            q3 = cv2.matchTemplate(blo, blc, cv2.TM_CCOEFF)
+            q4 = cv2.matchTemplate(bro, brc, cv2.TM_CCOEFF)
             
             score = (q1[0][0] + q2[0][0] + q3[0][0] + q4[0][0]) / 4
 
             print(score)
-            if score < best_rank_match_diff:
+            if score > best_rank_match_diff:
 #                print(score, best_rank_match_diff)
                 best_rank_match_diff = score
                 best_rank_name = Trank.name
